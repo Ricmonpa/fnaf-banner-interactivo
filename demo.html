@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Five Nights at Freddy's 2 - Demo Banner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* Layout principal - Desktop: Banner izquierda, Contenido derecha */
+        .demo-container {
+            display: flex;
+            min-height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Banner Container - Izquierda */
+        .banner-wrapper {
+            width: 300px;
+            min-width: 300px;
+            height: 600px;
+            position: sticky;
+            top: 0;
+            background: #000;
+            border-right: 1px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        /* Contenido simulado - Derecha */
+        .content-area {
+            flex: 1;
+            padding: 40px;
+            background: #fff;
+        }
+
+        .content-header {
+            margin-bottom: 30px;
+        }
+
+        .content-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .content-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .content-section {
+            margin-bottom: 40px;
+        }
+
+        .content-section h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .content-section p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .loading-placeholder {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+            border-radius: 4px;
+            height: 20px;
+            margin-bottom: 15px;
+        }
+
+        .loading-placeholder.large {
+            height: 200px;
+            margin-bottom: 20px;
+        }
+
+        .loading-placeholder.medium {
+            height: 100px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Banner Styles - Copiado del index.html */
+        .banner-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #000;
+        }
+
+        /* Cuando el player está activo, el contenedor no debe mostrar fondo negro */
+        .banner-container.player-active {
+            background: transparent;
+        }
+
+        .state {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+
+        .state.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #state-poster {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        #state-poster.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #state-poster video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #state-intro {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            position: relative;
+        }
+
+        #state-intro video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Botón de mute/unmute para intro */
+        .intro-mute-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .intro-mute-button:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+
+        .intro-mute-button svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+
+        .intro-mute-button.muted svg.sound-on {
+            display: none;
+        }
+
+        .intro-mute-button.muted svg.sound-off {
+            display: block;
+        }
+
+        .intro-mute-button:not(.muted) svg.sound-on {
+            display: block;
+        }
+
+        .intro-mute-button:not(.muted) svg.sound-off {
+            display: none;
+        }
+
+        #state-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 5% 3%;
+            background: #000;
+            overflow-y: auto;
+        }
+
+        .menu-title {
+            color: #00ff00;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3%;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+            letter-spacing: 2px;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, auto);
+            gap: 3%;
+            width: 100%;
+            max-width: 90%;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .character-button {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 150px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s ease, filter 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-button:hover {
+            transform: scale(1.05);
+        }
+
+        .character-button:hover .character-image {
+            filter: brightness(1.2) drop-shadow(0 0 15px rgba(0, 255, 0, 0.5));
+        }
+
+        .character-button:hover .character-image img {
+            transform: scale(1.1);
+        }
+
+        .character-image {
+            width: 100%;
+            height: 70%;
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+            transition: filter 0.3s ease;
+        }
+
+        .character-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+            transition: transform 0.3s ease;
+        }
+
+        .character-button:hover .character-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 0, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 30%, rgba(255, 255, 0, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            animation: eyeGlow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes eyeGlow {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+
+        .character-label {
+            width: 90%;
+            background: #ffd700;
+            color: #000;
+            font-weight: 700;
+            font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+            padding: 8px 12px;
+            text-align: center;
+            border-radius: 3px;
+            margin-top: 5px;
+            box-shadow: 0 2px 5px rgba(255, 215, 0, 0.3);
+            letter-spacing: 1px;
+        }
+
+        #state-player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            z-index: 10;
+        }
+
+        #state-player.active {
+            background: transparent;
+        }
+
+        #main-player {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 0;
+            margin: 0;
+            z-index: 1;
+            background: transparent;
+        }
+
+        .player-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 0%, transparent 60%, rgba(0, 0, 0, 0.7) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 3%;
+            pointer-events: none;
+            margin: 0;
+            z-index: 1;
+        }
+
+        .player-overlay .player-buttons {
+            pointer-events: auto;
+        }
+
+        .player-buttons {
+            display: flex;
+            gap: 3%;
+            width: 100%;
+            max-width: 95%;
+            justify-content: center;
+        }
+
+        .player-button {
+            flex: 1;
+            max-width: 48%;
+            background: #ffd700;
+            color: #000;
+            font-weight: 700;
+            font-size: clamp(0.8rem, 2vw, 1.1rem);
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.4);
+            letter-spacing: 1px;
+        }
+
+        .player-button:hover {
+            background: #ffed4e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 215, 0, 0.6);
+        }
+
+        .player-button:active {
+            transform: translateY(0);
+        }
+
+        /* Responsive - Mobile */
+        @media (max-width: 768px) {
+            .demo-container {
+                flex-direction: column;
+            }
+
+            .banner-wrapper {
+                width: 100%;
+                height: 100vh;
+                max-height: 600px;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .content-title {
+                font-size: 24px;
+            }
+
+            #state-menu {
+                padding: 4% 3%;
+            }
+
+            .menu-title {
+                margin-bottom: 2%;
+                font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+            }
+
+            .characters-grid {
+                gap: 2%;
+                max-width: 95%;
+            }
+
+            .character-button {
+                min-height: 120px;
+            }
+
+            .character-image {
+                height: 75%;
+            }
+
+            .character-image img {
+                object-fit: contain;
+                object-position: center;
+            }
+
+            .character-label {
+                font-size: clamp(0.75rem, 2vw, 1rem);
+                padding: 6px 10px;
+            }
+
+            /* Fix para poster animado e intro en mobile - evitar corte superior */
+            #state-poster video {
+                object-fit: contain;
+                object-position: center;
+            }
+
+            #state-intro video {
+                object-fit: contain;
+                object-position: center;
+            }
+        }
+
+        /* Desktop adjustments para banner */
+        @media (min-width: 768px) {
+            #state-poster video,
+            #state-intro video,
+            #main-player {
+                object-fit: contain;
+            }
+
+            #state-menu {
+                padding: 8px 12px;
+                justify-content: flex-start;
+                overflow-y: auto;
+            }
+
+            .menu-title {
+                margin-bottom: 8px;
+                font-size: 14px;
+                line-height: 1.2;
+                flex-shrink: 0;
+            }
+
+            .characters-grid {
+                max-width: 95%;
+                gap: 6px;
+                height: calc(100% - 40px);
+                flex: 1;
+                min-height: 0;
+                margin: 0 auto;
+            }
+
+            .character-button {
+                min-height: 0;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding: 0;
+            }
+
+            .character-image {
+                height: calc(100% - 35px);
+                flex: 1 1 auto;
+                min-height: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+
+            .character-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                object-position: center;
+            }
+
+            .character-label {
+                font-size: 10px;
+                padding: 4px 6px;
+                flex-shrink: 0;
+                margin-top: 4px;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <!-- Banner a la izquierda -->
+        <div class="banner-wrapper">
+            <div class="banner-container">
+                <!-- STATE 1: POSTER ANIMADO -->
+                <div id="state-poster" class="state active">
+                    <video id="poster-video" autoplay muted playsinline>
+                        <source src="Animated Posters /Animated Poster 1.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <!-- STATE 2: INTRO -->
+                <div id="state-intro" class="state">
+                    <video id="intro-video" muted playsinline>
+                        <source src="Videos/intro.mp4" type="video/mp4">
+                    </video>
+                    <button class="intro-mute-button muted" id="intro-mute-btn" aria-label="Toggle sound">
+                        <!-- Icono de sonido ON -->
+                        <svg class="sound-on" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                        </svg>
+                        <!-- Icono de sonido OFF -->
+                        <svg class="sound-off" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- STATE 3: MENU -->
+                <div id="state-menu" class="state">
+                    <h1 class="menu-title">ELIGE TU ANIMATRÓNICO FAVORITO</h1>
+                    <div class="characters-grid">
+                        <div class="character-button" data-character="freddy">
+                            <div class="character-image">
+                                <img src="Posters/FN2_Intl_Character_TOY-SIDE-EYE_Freddy_Digital1Sht_LAS.jpg" alt="Freddy">
+                            </div>
+                            <div class="character-label">FREDDY</div>
+                        </div>
+                        <div class="character-button" data-character="bonnie">
+                            <div class="character-image">
+                                <img src="Posters/FN2_Intl_Character_TOY-SIDE-EYE_Bonnie_Digital1Sht_LAS.jpg" alt="Bonnie">
+                            </div>
+                            <div class="character-label">BONNIE</div>
+                        </div>
+                        <div class="character-button" data-character="chica">
+                            <div class="character-image">
+                                <img src="Posters/FN2_Intl_Character_TOY-SIDE-EYE_Chica_Digital1Sht_LAS.jpg" alt="Chica">
+                            </div>
+                            <div class="character-label">CHICA</div>
+                        </div>
+                        <div class="character-button" data-character="mangle">
+                            <div class="character-image">
+                                <img src="Posters/FN2_Intl_Character_TOY-SIDE-EYE_Mangle_Digital1Sht_LAS.jpg" alt="Mangle">
+                            </div>
+                            <div class="character-label">MANGLE</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATE 4: PLAYER -->
+                <div id="state-player" class="state">
+                    <video id="main-player" muted playsinline></video>
+                    <div class="player-overlay">
+                        <div class="player-buttons">
+                            <button class="player-button" id="btn-back">VOLVER AL INICIO</button>
+                            <button class="player-button" id="btn-see-more">VER MÁS</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido simulado a la derecha -->
+        <div class="content-area">
+            <div class="content-header">
+                <h1 class="content-title">Universal Pictures</h1>
+                <p class="content-subtitle">Entertainment News & Updates</p>
+            </div>
+
+            <div class="content-section">
+                <h2>Latest Releases</h2>
+                <div class="loading-placeholder large"></div>
+                <div class="loading-placeholder"></div>
+                <div class="loading-placeholder"></div>
+                <div class="loading-placeholder" style="width: 60%;"></div>
+            </div>
+
+            <div class="content-section">
+                <h2>Featured Content</h2>
+                <div class="loading-placeholder medium"></div>
+                <div class="loading-placeholder"></div>
+                <div class="loading-placeholder"></div>
+                <div class="loading-placeholder" style="width: 70%;"></div>
+            </div>
+
+            <div class="content-section">
+                <h2>News & Updates</h2>
+                <div class="loading-placeholder"></div>
+                <div class="loading-placeholder"></div>
+                <div class="loading-placeholder" style="width: 80%;"></div>
+                <div class="loading-placeholder"></div>
+                <div class="loading-placeholder" style="width: 65%;"></div>
+            </div>
+
+            <div class="content-section">
+                <h2>Trending Now</h2>
+                <div class="loading-placeholder medium"></div>
+                <div class="loading-placeholder"></div>
+                <div class="loading-placeholder" style="width: 75%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de videos por personaje
+        const characterVideos = {
+            freddy: 'Videos/Freddy.mp4',
+            bonnie: 'Videos/chica 15 secs.mp4',
+            chica: 'Videos/chica 15 secs.mp4',
+            mangle: 'Videos/chica 15 secs.mp4'
+        };
+
+        // Variables globales
+        const posterVideo = document.getElementById('poster-video');
+        const introVideo = document.getElementById('intro-video');
+        const mainPlayer = document.getElementById('main-player');
+        const statePoster = document.getElementById('state-poster');
+        const stateIntro = document.getElementById('state-intro');
+        const stateMenu = document.getElementById('state-menu');
+        const statePlayer = document.getElementById('state-player');
+        const characterButtons = document.querySelectorAll('.character-button');
+        const btnBack = document.getElementById('btn-back');
+        const btnSeeMore = document.getElementById('btn-see-more');
+        const introMuteBtn = document.getElementById('intro-mute-btn');
+
+        // Función para cambiar de estado
+        function switchState(fromState, toState) {
+            fromState.classList.remove('active');
+            setTimeout(() => {
+                toState.classList.add('active');
+            }, 50);
+        }
+
+        // Función para reproducir video con unmute después de interacción
+        function playVideoWithSound(video) {
+            video.play().then(() => {
+                video.muted = false;
+            }).catch(error => {
+                console.log('Error al reproducir video:', error);
+            });
+        }
+
+        // EVENTO 1: Cuando termina el poster animado, pasar al intro
+        posterVideo.addEventListener('ended', () => {
+            switchState(statePoster, stateIntro);
+            // El video inicia muted, el botón ya está en estado "muted"
+            introVideo.play();
+        });
+
+        // EVENTO: Toggle mute/unmute del video intro
+        introMuteBtn.addEventListener('click', () => {
+            if (introVideo.muted) {
+                introVideo.muted = false;
+                introMuteBtn.classList.remove('muted');
+            } else {
+                introVideo.muted = true;
+                introMuteBtn.classList.add('muted');
+            }
+        });
+
+        // Sincronizar el estado del botón con el estado del video
+        introVideo.addEventListener('volumechange', () => {
+            if (introVideo.muted) {
+                introMuteBtn.classList.add('muted');
+            } else {
+                introMuteBtn.classList.remove('muted');
+            }
+        });
+
+        // EVENTO 2: Cuando termina el video de intro, pasar al menú
+        introVideo.addEventListener('ended', () => {
+            switchState(stateIntro, stateMenu);
+        });
+
+        // EVENTO 3: Click en personajes
+        const bannerContainer = document.querySelector('.banner-container');
+        characterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const character = button.getAttribute('data-character');
+                const videoSrc = characterVideos[character];
+
+                if (videoSrc) {
+                    // Ocultar todos los estados excepto el player
+                    statePoster.classList.remove('active');
+                    stateIntro.classList.remove('active');
+                    stateMenu.classList.remove('active');
+                    
+                    // Remover fondo negro del contenedor cuando el player está activo
+                    bannerContainer.classList.add('player-active');
+                    
+                    // Cargar y mostrar solo el video del personaje
+                    mainPlayer.src = videoSrc;
+                    mainPlayer.load();
+                    switchState(stateMenu, statePlayer);
+                    playVideoWithSound(mainPlayer);
+                }
+            });
+        });
+
+        // EVENTO 4: Botón "VOLVER AL INICIO"
+        btnBack.addEventListener('click', () => {
+            mainPlayer.pause();
+            mainPlayer.currentTime = 0;
+            mainPlayer.src = '';
+            // Restaurar fondo negro del contenedor
+            bannerContainer.classList.remove('player-active');
+            switchState(statePlayer, stateMenu);
+        });
+
+        // EVENTO 5: Botón "VER MÁS"
+        btnSeeMore.addEventListener('click', () => {
+            let clickTag = window.clickTag || window.clickTAG || window.click_url || window.clickURL;
+            
+            if (clickTag) {
+                window.open(clickTag, '_blank');
+            } else {
+                window.open('https://www.universalpictures.com', '_blank');
+            }
+        });
+
+        // Manejo de errores de video
+        posterVideo.addEventListener('error', (e) => {
+            console.error('Error al cargar poster animado:', e);
+            switchState(statePoster, stateIntro);
+            introVideo.play();
+        });
+
+        introVideo.addEventListener('error', (e) => {
+            console.error('Error al cargar video de intro:', e);
+            switchState(stateIntro, stateMenu);
+        });
+
+        mainPlayer.addEventListener('error', (e) => {
+            console.error('Error al cargar video del personaje:', e);
+        });
+
+        // Preload de los videos
+        posterVideo.load();
+        introVideo.load();
+    </script>
+</body>
+</html>
