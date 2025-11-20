@@ -7,6 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <script type="text/javascript">
+        var clickTag = "https://www.universalpictures-latam.com/micro/five-nights-2?utm_source=Video&utm_medium=InteractiveIA&utm_campaign=FiveNightsAtFreddys2_AC";
+    </script>
     <style>
         * {
             margin: 0;
@@ -765,13 +768,7 @@
 
         // EVENTO 5: Botón "VER MÁS"
         btnSeeMore.addEventListener('click', () => {
-            let clickTag = window.clickTag || window.clickTAG || window.click_url || window.clickURL;
-            
-            if (clickTag) {
-                window.open(clickTag, '_blank');
-            } else {
-                window.open('https://www.universalpictures-latam.com/micro/five-nights-2?utm_source=Video&utm_medium=InteractiveIA&utm_campaign=FiveNightsAtFreddys2_AC', '_blank');
-            }
+            window.open(window.clickTag, '_blank');
         });
 
         // Manejo de errores de video
