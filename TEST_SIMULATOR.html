@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DV360 Simulator - FNAF2 Banner Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .controls {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .controls h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .control-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .control-group button {
+            background: #1a73e8;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .control-group button:hover {
+            background: #1557b0;
+        }
+
+        .preview-area {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .preview-area h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .banner-frame {
+            width: 300px;
+            height: 600px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .info-panel {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .info-panel h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .info-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-left: 4px solid #1a73e8;
+            margin-bottom: 10px;
+            font-family: monospace;
+            font-size: 13px;
+            word-break: break-all;
+        }
+
+        .info-item strong {
+            color: #1a73e8;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+
+        .quick-tests {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-test-btn {
+            background: #6c757d;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .quick-test-btn:hover {
+            background: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 DV360 Banner Simulator</h1>
+            <p>Test your FNAF2 banner locally before uploading to DV360. This simulates how DV360 passes the clickTag macro.</p>
+        </div>
+
+        <div class="controls">
+            <h2>⚙️ Test Configuration</h2>
+            
+            <div class="control-group">
+                <label>Banner URL (Cloudflare Pages):</label>
+                <input type="text" id="banner-url" value="https://fnaf2-banner-hosted.pages.dev/">
+            </div>
+
+            <div class="control-group">
+                <label>Click Destination URL (Simulates %%CLICK_URL_UNESC%%):</label>
+                <input type="text" id="click-url" value="https://ad.doubleclick.net/ddm/trackclk/N1234.5678UNIVERSAL/B9876543.012345678;dc_trk_aid=987654321;dc_trk_cid=123456789;dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;gdpr=$;gdpr_consent=$;ltd=?https://www.universalpictures-latam.com/micro/five-nights-2">
+            </div>
+
+            <div class="control-group">
+                <button onclick="loadBanner()">🚀 Load Banner with ClickTag</button>
+            </div>
+
+            <div class="quick-tests">
+                <button class="quick-test-btn" onclick="testLocal()">Test 1: Local (No ClickTag)</button>
+                <button class="quick-test-btn" onclick="testSimpleDV360()">Test 2: Simple DV360</button>
+                <button class="quick-test-btn" onclick="testFullDV360()">Test 3: Full DV360 URL</button>
+                <button class="quick-test-btn" onclick="testBrokenURL()">Test 4: Broken URL</button>
+            </div>
+        </div>
+
+        <div class="preview-area">
+            <h2>📱 Banner Preview</h2>
+            <div class="banner-frame" id="banner-frame">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999; text-align: center; padding: 20px;">
+                    Click "Load Banner" to start testing
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h2>📊 Test Information</h2>
+            <div id="test-info">
+                <div class="info-item warning">
+                    <strong>Status:</strong> Waiting for test to start...
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h2>📝 Testing Instructions</h2>
+            <div class="info-item">
+                <strong>1. Load the banner:</strong> Click "Load Banner with ClickTag" or use Quick Tests
+            </div>
+            <div class="info-item">
+                <strong>2. Watch the banner:</strong> It should play through poster → intro → menu states
+            </div>
+            <div class="info-item">
+                <strong>3. Select a character:</strong> Click any character to see their video
+            </div>
+            <div class="info-item">
+                <strong>4. Click "VER MÁS":</strong> Check that it opens the correct destination URL
+            </div>
+            <div class="info-item success">
+                <strong>✅ Success Criteria:</strong> "VER MÁS" should open the URL you set in "Click Destination URL" field
+            </div>
+            <div class="info-item warning">
+                <strong>⚠️ Failure Indicator:</strong> If it opens the hardcoded Universal URL instead of your test URL, the clickTag is NOT working
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h2>🔍 How to Verify ClickTag is Working</h2>
+            <div class="info-item">
+                <strong>Step 1:</strong> Open DevTools (F12 or right-click → Inspect)
+            </div>
+            <div class="info-item">
+                <strong>Step 2:</strong> Go to Console tab
+            </div>
+            <div class="info-item">
+                <strong>Step 3:</strong> Look for log: "ClickTag capturado: [URL]"
+            </div>
+            <div class="info-item success">
+                <strong>✅ PASS:</strong> If the logged URL matches your test URL → ClickTag is working
+            </div>
+            <div class="info-item warning">
+                <strong>❌ FAIL:</strong> If it shows the hardcoded Universal URL → ClickTag is broken
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadBanner() {
+            const bannerUrl = document.getElementById('banner-url').value;
+            const clickUrl = document.getElementById('click-url').value;
+            
+            // Construct iframe URL with clickTag parameter
+            const fullUrl = `${bannerUrl}${bannerUrl.includes('?') ? '&' : '?'}clickTag=${encodeURIComponent(clickUrl)}`;
+            
+            // Create iframe with DV360-like sandbox attributes
+            const iframe = document.createElement('iframe');
+            iframe.src = fullUrl;
+            iframe.width = '300';
+            iframe.height = '600';
+            iframe.frameBorder = '0';
+            iframe.scrolling = 'no';
+            iframe.style.border = '0';
+            iframe.style.display = 'block';
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation');
+            iframe.setAttribute('allow', 'autoplay');
+            
+            // Replace banner frame content
+            const bannerFrame = document.getElementById('banner-frame');
+            bannerFrame.innerHTML = '';
+            bannerFrame.appendChild(iframe);
+            
+            // Update test info
+            updateTestInfo(fullUrl, clickUrl);
+        }
+
+        function updateTestInfo(fullUrl, clickUrl) {
+            const testInfo = document.getElementById('test-info');
+            testInfo.innerHTML = `
+                <div class="info-item success">
+                    <strong>Status:</strong> Banner loaded successfully
+                </div>
+                <div class="info-item">
+                    <strong>Full Banner URL:</strong> ${fullUrl}
+                </div>
+                <div class="info-item">
+                    <strong>Expected Click Destination:</strong> ${clickUrl}
+                </div>
+                <div class="info-item warning">
+                    <strong>⚠️ Next Step:</strong> Click a character, then click "VER MÁS" and verify it opens the URL above
+                </div>
+            `;
+        }
+
+        // Quick test functions
+        function testLocal() {
+            document.getElementById('banner-url').value = 'https://fnaf2-banner-hosted.pages.dev/';
+            document.getElementById('click-url').value = '';
+            loadBanner();
+        }
+
+        function testSimpleDV360() {
+            document.getElementById('banner-url').value = 'https://fnaf2-banner-hosted.pages.dev/';
+            document.getElementById('click-url').value = 'https://example.com/test-click';
+            loadBanner();
+        }
+
+        function testFullDV360() {
+            document.getElementById('banner-url').value = 'https://fnaf2-banner-hosted.pages.dev/';
+            document.getElementById('click-url').value = 'https://ad.doubleclick.net/ddm/trackclk/N1234.5678UNIVERSAL/B9876543.012345678;dc_trk_aid=987654321;dc_trk_cid=123456789;dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;gdpr=$;gdpr_consent=$;ltd=?https://www.universalpictures-latam.com/micro/five-nights-2';
+            loadBanner();
+        }
+
+        function testBrokenURL() {
+            document.getElementById('banner-url').value = 'https://fnaf2-banner-hosted.pages.dev/';
+            document.getElementById('click-url').value = 'BROKEN_URL_TEST_123';
+            loadBanner();
+        }
+    </script>
+</body>
+</html>
+

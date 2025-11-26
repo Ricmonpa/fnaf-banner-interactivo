@@ -8,7 +8,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
     <script type="text/javascript">
-        var clickTag = "https://www.universalpictures-latam.com/micro/five-nights-2?utm_source=Video&utm_medium=InteractiveIA&utm_campaign=FiveNightsAtFreddys2_AC";
+        // ========================================
+        // CLICKTAG DINÁMICO - DV360 COMPATIBLE
+        // ========================================
+        // Función para capturar parámetros de la URL del iframe
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(window.location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+
+        // Capturar clickTag de la URL (DV360 pasa %%CLICK_URL_UNESC%%)
+        // Fallback: si no hay parámetro, usa URL por defecto (para testing local)
+        var clickTag = getParameterByName('clickTag') || 
+                       getParameterByName('clickTAG') || 
+                       getParameterByName('ClickTag') ||
+                       "https://www.universalpictures-latam.com/micro/five-nights-2?utm_source=Video&utm_medium=InteractiveIA&utm_campaign=FiveNightsAtFreddys2_AC";
+
+        // Debug: log del clickTag capturado (comentar en producción si prefieres)
+        console.log('ClickTag capturado:', clickTag);
     </script>
     <style>
         * {
@@ -554,14 +573,14 @@
                 <!-- STATE 1: POSTER ANIMADO -->
                 <div id="state-poster" class="state active">
                     <video id="poster-video" autoplay muted playsinline>
-                        <source src="Videos/intro_animada.mp4" type="video/mp4">
+                        <source src="intro_animada.mp4" type="video/mp4">
                     </video>
                 </div>
 
                 <!-- STATE 2: INTRO -->
                 <div id="state-intro" class="state">
                     <video id="intro-video" muted playsinline>
-                        <source src="Videos/intro.mp4" type="video/mp4">
+                        <source src="intro.mp4" type="video/mp4">
                     </video>
                     <button class="intro-mute-button muted" id="intro-mute-btn" aria-label="Toggle sound">
                         <!-- Icono de sonido ON -->
@@ -581,25 +600,25 @@
                     <div class="characters-grid">
                         <div class="character-button" data-character="freddy">
                             <div class="character-image">
-                                <img src="Posters/FN2_Intl_Character_TOY-SIDE-EYE_Freddy_Digital1Sht_LAS.jpg" alt="Freddy">
+                                <img src="FN2_Intl_Character_TOY-SIDE-EYE_Freddy_Digital1Sht_LAS.jpg" alt="Freddy">
                             </div>
                             <div class="character-label">FREDDY</div>
                         </div>
                         <div class="character-button" data-character="bonnie">
                             <div class="character-image">
-                                <img src="Posters/FN2_Intl_Character_TOY-SIDE-EYE_Bonnie_Digital1Sht_LAS.jpg" alt="Bonnie">
+                                <img src="FN2_Intl_Character_TOY-SIDE-EYE_Bonnie_Digital1Sht_LAS.jpg" alt="Bonnie">
                             </div>
                             <div class="character-label">BONNIE</div>
                         </div>
                         <div class="character-button" data-character="chica">
                             <div class="character-image">
-                                <img src="Posters/FN2_Intl_Character_TOY-SIDE-EYE_Chica_Digital1Sht_LAS.jpg" alt="Chica">
+                                <img src="FN2_Intl_Character_TOY-SIDE-EYE_Chica_Digital1Sht_LAS.jpg" alt="Chica">
                             </div>
                             <div class="character-label">CHICA</div>
                         </div>
                         <div class="character-button" data-character="mangle">
                             <div class="character-image">
-                                <img src="Posters/FN2_Intl_Character_TOY-SIDE-EYE_Mangle_Digital1Sht_LAS.jpg" alt="Mangle">
+                                <img src="FN2_Intl_Character_TOY-SIDE-EYE_Mangle_Digital1Sht_LAS.jpg" alt="Mangle">
                             </div>
                             <div class="character-label">MANGLE</div>
                         </div>
@@ -663,10 +682,10 @@
     <script>
         // Configuración de videos por personaje
         const characterVideos = {
-            freddy: 'Videos/Freddy.mp4',
-            bonnie: 'Videos/chica_15_secs.mp4',
-            chica: 'Videos/Chica_10_secs.mp4',
-            mangle: 'Videos/chica_15_secs.mp4'
+            freddy: 'Freddy.mp4',
+            bonnie: 'chica_15_secs.mp4',
+            chica: 'Chica_10_secs.mp4',
+            mangle: 'chica_15_secs.mp4'
         };
 
         // Variables globales
@@ -774,8 +793,22 @@
         // Manejo de errores de video
         posterVideo.addEventListener('error', (e) => {
             console.error('Error al cargar poster animado:', e);
+            console.error('Detalles del error:', posterVideo.error);
+            // Si hay error, intentar pasar al intro
             switchState(statePoster, stateIntro);
-            introVideo.play();
+            introVideo.play().catch(err => {
+                console.error('Error al reproducir intro:', err);
+            });
+        });
+
+        // Verificar que el video se cargue correctamente
+        posterVideo.addEventListener('canplay', () => {
+            console.log('Poster video listo para reproducir');
+            if (posterVideo.paused) {
+                posterVideo.play().catch(error => {
+                    console.log('Error al reproducir poster (canplay):', error);
+                });
+            }
         });
 
         introVideo.addEventListener('error', (e) => {
@@ -790,6 +823,23 @@
         // Preload de los videos
         posterVideo.load();
         introVideo.load();
+
+        // Forzar reproducción del video poster al cargar la página
+        // Esto asegura que el video se reproduzca incluso si el navegador bloquea autoplay
+        window.addEventListener('load', () => {
+            posterVideo.play().catch(error => {
+                console.log('Error al reproducir poster video:', error);
+            });
+        });
+
+        // También intentar reproducir cuando el video esté listo
+        posterVideo.addEventListener('loadeddata', () => {
+            if (posterVideo.paused) {
+                posterVideo.play().catch(error => {
+                    console.log('Error al reproducir poster video (loadeddata):', error);
+                });
+            }
+        });
     </script>
 </body>
 </html>
